@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import {
   BrainCircuit,
-  Component,
   FolderKanban,
   LayoutDashboard,
   MessagesSquare,
@@ -23,7 +22,6 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/practice', label: 'Practice', icon: Target },
   { to: '/mock-interview', label: 'Mock Interview', icon: MessagesSquare },
   { to: '/settings', label: 'Settings', icon: Settings },
-  { to: '/ui', label: 'Components', icon: Component },
 ]
 
 interface SidebarProps {

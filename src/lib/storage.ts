@@ -33,14 +33,25 @@ function write(key: string, value: unknown): void {
   }
 }
 
-/** Key from Settings, falling back to VITE_GROQ_API_KEY in the local .env. */
+function remove(key: string): void {
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // Same as write: nothing useful to do.
+  }
+}
+
+/** The Groq key entered on the Settings page, or '' if none is saved. */
 export function getApiKey(): string {
-  const envKey: string = import.meta.env.VITE_GROQ_API_KEY ?? ''
-  return read(KEYS.apiKey, '') || envKey.trim()
+  return read(KEYS.apiKey, '')
 }
 
 export function setApiKey(apiKey: string): void {
   write(KEYS.apiKey, apiKey.trim())
+}
+
+export function clearApiKey(): void {
+  remove(KEYS.apiKey)
 }
 
 export function getProgress(): Progress {
