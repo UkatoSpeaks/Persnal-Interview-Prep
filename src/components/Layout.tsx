@@ -1,12 +1,16 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Sidebar from './Sidebar'
 
+const ICON_BUTTON =
+  'rounded-control p-1.5 text-muted transition-colors hover:bg-subtle hover:text-ink'
+
 export default function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const closeDrawer = () => setDrawerOpen(false)
+  const { pathname } = useLocation()
 
   return (
     <div className="flex h-dvh overflow-hidden">
@@ -18,7 +22,7 @@ export default function Layout() {
         {drawerOpen && (
           <div className="fixed inset-0 z-40 md:hidden">
             <motion.div
-              className="absolute inset-0 bg-black/60"
+              className="absolute inset-0 bg-ink/20"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -37,7 +41,7 @@ export default function Layout() {
                 type="button"
                 onClick={closeDrawer}
                 aria-label="Close menu"
-                className="absolute right-3 top-3.5 rounded-md p-1 text-zinc-400 hover:text-zinc-100"
+                className={`absolute right-3 top-3 ${ICON_BUTTON}`}
               >
                 <X className="size-5" />
               </button>
@@ -47,12 +51,12 @@ export default function Layout() {
       </AnimatePresence>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-zinc-800 px-4 md:hidden">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-line bg-surface px-3 md:hidden">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open menu"
-            className="rounded-md p-1 text-zinc-400 hover:text-zinc-100"
+            className={ICON_BUTTON}
           >
             <Menu className="size-5" />
           </button>
@@ -60,9 +64,15 @@ export default function Layout() {
         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-5xl px-4 py-8 md:px-8">
+          <motion.div
+            key={pathname}
+            className="mx-auto max-w-5xl px-4 py-8 md:px-10 md:py-12"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+          >
             <Outlet />
-          </div>
+          </motion.div>
         </main>
       </div>
     </div>

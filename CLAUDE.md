@@ -20,6 +20,7 @@ These are not negotiable. Do not propose or add anything that breaks them.
 - React Router (`react-router-dom`)
 - `lucide-react` for icons
 - `framer-motion` for subtle transitions only
+- `react-markdown` + `remark-gfm` + `rehype-highlight` for markdown (always through `src/components/ui/Markdown.tsx`)
 - No component library with heavy default styling (no MUI, Chakra, Ant, Bootstrap, etc.). Build UI from Tailwind classes.
 
 ## Commands
@@ -34,10 +35,11 @@ These are not negotiable. Do not propose or add anything that breaks them.
 src/
   data/        projects, questions, concepts (typed .ts files)
   types/       shared TypeScript types
-  lib/         storage.ts (localStorage helpers), groq.ts (Groq client)
-  components/  reusable UI (Layout, Sidebar, ...)
+  lib/         storage.ts (localStorage helpers), groq.ts (Groq client), cn.ts
+  components/  app shell (Layout, Sidebar, ...)
+    ui/        design-system primitives (Button, Card, Markdown, ...)
   pages/       Dashboard, Projects, ProjectDetail, Concepts, ConceptDetail,
-               Practice, MockInterview, Settings
+               Practice, MockInterview, Settings, UiPreview (/ui)
   App.tsx      route table
   main.tsx     entry point
 ```
@@ -48,9 +50,24 @@ src/
 
 ## Design rules
 
-- Icons: `lucide-react` only.
-- Motion: `framer-motion` only, and only for subtle transitions (short fades and slides). Nothing decorative or attention-seeking.
-- No component library with heavy default styling.
-- The sidebar is fixed on desktop and a slide-in drawer on mobile (below `md`).
+Look and feel: light, clean, minimal and calm, in the style of Linear, Vercel and Notion. It should feel like a premium tool, not a template.
 
-<!-- TODO: the owner's full design rules were not included in the initial brief. Add them here. -->
+- **Light theme only, for now.** All colors are CSS variables in the `@theme` block of `src/index.css`, so a dark theme can be added later. Use the token utilities (`bg-canvas`, `text-muted`, `border-line`, ...); never hardcode a hex value or reach for a Tailwind palette color (`zinc-*`, `indigo-*`, ...) in a component.
+- **Palette:**
+  - Page background `canvas` #FAFAFA
+  - Cards and surfaces `surface` #FFFFFF
+  - Borders `line` #E5E5E5
+  - Body text `ink` #171717
+  - Secondary text `muted` #737373
+  - One accent, a muted indigo, `accent` #4F46E5. Use it sparingly: active nav, primary buttons, focus rings.
+- **No gradients, no glassmorphism, no heavy shadows.** Use 1px borders. The only shadow is `shadow-hover`, a very soft one on hover for clickable cards.
+- **Fonts:** Inter (Google Fonts) for all text, with `font-feature-settings: "cv11", "ss01"`. JetBrains Mono for code.
+- **Type scale:** 13/14/16/20/28px only (`text-xs` / `text-sm` / `text-base` / `text-lg` / `text-xl`; other sizes are removed from the theme). Headings are semibold with slightly tight letter-spacing. Never all-caps labels, except tiny section headers.
+- **Spacing:** generous whitespace on an 8px grid. Max ~760px content width on reading pages (`max-w-reading`); wider grids for card lists.
+- **Shape:** 8px radius on cards (`rounded-card`), 6px on buttons and inputs (`rounded-control`).
+- **Motion:** 150ms ease transitions, on hover and focus only. `framer-motion` only for a subtle fade or slide on page changes and disclosure; nothing bouncy, decorative or attention-seeking.
+- **Status colors only carry meaning:** green = confident, amber = shaky, red = weak. Use the soft tinted backgrounds (`bg-confident-soft`, ...), not saturated fills.
+- **Sidebar:** white background with a right border, the app name at the top, nav items with icons. The active item gets a light gray background and an accent-colored icon. Fixed on desktop; a slide-in drawer on mobile (below `md`).
+- **Icons:** `lucide-react` only.
+- **Components:** use the primitives in `src/components/ui/` (Button, Card, Badge, Input, Textarea, Tabs, Kbd, EmptyState, ProgressBar, Collapsible, Markdown) rather than restyling raw elements per page. No component library with heavy default styling.
+- **`/ui` previews every primitive.** When you add or change one, update `src/pages/UiPreview.tsx` to show it.

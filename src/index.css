@@ -1,9 +1,269 @@
 @import 'tailwindcss';
 
-:root {
-  color-scheme: dark;
+/*
+ * Design tokens. Every color, size and radius the app uses is defined here, so
+ * a dark theme can later be added by overriding these variables under a
+ * selector such as [data-theme='dark'] without touching components.
+ */
+@theme {
+  /* Surfaces and text */
+  --color-canvas: #fafafa;
+  --color-surface: #ffffff;
+  --color-subtle: #f5f5f5;
+  --color-line: #e5e5e5;
+  --color-line-strong: #d4d4d4;
+  --color-ink: #171717;
+  --color-muted: #737373;
+
+  /* The one accent: active nav, primary buttons, focus rings. */
+  --color-accent: #4f46e5;
+  --color-accent-hover: #4338ca;
+  --color-accent-soft: #eef2ff;
+
+  /* Status. Only used where the color carries meaning. */
+  --color-confident: #16a34a;
+  --color-confident-soft: #f0fdf4;
+  --color-confident-line: #bbf7d0;
+  --color-confident-ink: #166534;
+  --color-shaky: #d97706;
+  --color-shaky-soft: #fffbeb;
+  --color-shaky-line: #fde68a;
+  --color-shaky-ink: #92400e;
+  --color-weak: #dc2626;
+  --color-weak-soft: #fef2f2;
+  --color-weak-line: #fecaca;
+  --color-weak-ink: #991b1b;
+
+  /* Syntax highlighting */
+  --color-code-comment: #8a8a8a;
+  --color-code-keyword: #4f46e5;
+  --color-code-string: #15803d;
+  --color-code-number: #b45309;
+  --color-code-title: #0f766e;
+  --color-code-attr: #9f1239;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans--font-feature-settings: 'cv11', 'ss01';
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale: 13 / 14 / 16 / 20 / 28. Nothing else. */
+  --text-*: initial;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.25rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.75rem;
+  --text-xl--line-height: 2.25rem;
+
+  --radius-card: 8px;
+  --radius-control: 6px;
+
+  /* The only shadow: hover on clickable cards. */
+  --shadow-*: initial;
+  --shadow-hover: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 12px rgb(0 0 0 / 0.05);
+
+  --container-reading: 760px;
+
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: ease;
 }
 
-body {
-  @apply bg-zinc-950 text-zinc-100 antialiased;
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-canvas text-sm text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight;
+  }
+
+  code,
+  kbd,
+  pre {
+    font-feature-settings: normal;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+  }
+}
+
+@layer components {
+  /* Prose typography for the Markdown renderer. */
+  .markdown {
+    @apply text-base text-ink;
+    line-height: 1.7;
+  }
+
+  .markdown > :first-child {
+    @apply mt-0;
+  }
+
+  .markdown > :last-child {
+    @apply mb-0;
+  }
+
+  .markdown h1 {
+    @apply mt-10 mb-4 text-xl;
+  }
+
+  .markdown h2 {
+    @apply mt-10 mb-3 text-lg;
+  }
+
+  .markdown h3 {
+    @apply mt-8 mb-2 text-base;
+  }
+
+  .markdown h4 {
+    @apply mt-6 mb-2 text-sm;
+  }
+
+  .markdown p,
+  .markdown ul,
+  .markdown ol,
+  .markdown blockquote,
+  .markdown pre,
+  .markdown .markdown-table {
+    @apply my-4;
+  }
+
+  .markdown a {
+    @apply text-accent underline decoration-accent/30 underline-offset-2 transition-colors hover:decoration-accent;
+  }
+
+  .markdown strong {
+    @apply font-semibold;
+  }
+
+  .markdown ul {
+    @apply list-disc pl-6;
+  }
+
+  .markdown ol {
+    @apply list-decimal pl-6;
+  }
+
+  .markdown li {
+    @apply my-1;
+  }
+
+  .markdown li::marker {
+    @apply text-muted;
+  }
+
+  .markdown li > ul,
+  .markdown li > ol {
+    @apply my-1;
+  }
+
+  .markdown .contains-task-list {
+    @apply list-none pl-0;
+  }
+
+  .markdown .task-list-item input {
+    @apply mr-2 accent-accent;
+  }
+
+  .markdown blockquote {
+    @apply border-l-2 border-line-strong pl-4 text-muted;
+  }
+
+  .markdown hr {
+    @apply my-8 border-line;
+  }
+
+  .markdown :not(pre) > code {
+    @apply rounded border border-line bg-subtle px-1 py-0.5 font-mono text-xs;
+  }
+
+  .markdown pre {
+    @apply overflow-x-auto rounded-card border border-line bg-surface p-4 font-mono text-xs;
+    line-height: 1.7;
+  }
+
+  .markdown .markdown-table {
+    @apply overflow-x-auto rounded-card border border-line bg-surface;
+  }
+
+  .markdown table {
+    @apply w-full border-collapse text-left text-sm;
+  }
+
+  .markdown th {
+    @apply border-b border-line bg-subtle px-4 py-2 font-medium;
+  }
+
+  .markdown td {
+    @apply border-b border-line px-4 py-2;
+  }
+
+  .markdown tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* Light highlight.js theme, driven by the --color-code-* tokens. */
+  .hljs-comment,
+  .hljs-quote,
+  .hljs-meta {
+    color: var(--color-code-comment);
+  }
+
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-literal,
+  .hljs-built_in,
+  .hljs-type {
+    color: var(--color-code-keyword);
+  }
+
+  .hljs-string,
+  .hljs-regexp,
+  .hljs-addition {
+    color: var(--color-code-string);
+  }
+
+  .hljs-number,
+  .hljs-symbol,
+  .hljs-bullet {
+    color: var(--color-code-number);
+  }
+
+  .hljs-title,
+  .hljs-section,
+  .hljs-name {
+    color: var(--color-code-title);
+  }
+
+  .hljs-attr,
+  .hljs-attribute,
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-deletion {
+    color: var(--color-code-attr);
+  }
+
+  .hljs-emphasis {
+    font-style: italic;
+  }
+
+  .hljs-strong {
+    font-weight: 600;
+  }
 }
