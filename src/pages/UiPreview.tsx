@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
-import { ArrowRight, Inbox, Plus } from 'lucide-react'
+import { ArrowRight, Bookmark, Inbox, Plus } from 'lucide-react'
 import Badge from '../components/ui/Badge'
-import Button from '../components/ui/Button'
+import Button, { buttonClasses } from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import Collapsible from '../components/ui/Collapsible'
 import EmptyState from '../components/ui/EmptyState'
@@ -9,6 +9,7 @@ import Input from '../components/ui/Input'
 import Kbd from '../components/ui/Kbd'
 import Markdown from '../components/ui/Markdown'
 import ProgressBar from '../components/ui/ProgressBar'
+import Select from '../components/ui/Select'
 import Tabs, { type TabItem } from '../components/ui/Tabs'
 import Textarea from '../components/ui/Textarea'
 
@@ -139,6 +140,9 @@ export default function UiPreview() {
           <Button size="sm" variant="ghost">
             Small ghost
           </Button>
+          <a href="#button-link" className={buttonClasses('outline', 'sm')}>
+            Link via buttonClasses
+          </a>
         </div>
       </Section>
 
@@ -172,7 +176,7 @@ export default function UiPreview() {
         </div>
       </Section>
 
-      <Section title="Input and Textarea">
+      <Section title="Input, Textarea and Select">
         <div className="max-w-md space-y-6">
           <div>
             <label htmlFor="ui-input" className="mb-2 block text-sm font-medium">
@@ -191,6 +195,19 @@ export default function UiPreview() {
               Notes
             </label>
             <Textarea id="ui-textarea" placeholder="What tripped you up?" />
+          </div>
+          <div>
+            <label htmlFor="ui-select" className="mb-2 block text-sm font-medium">
+              Select
+            </label>
+            <Select id="ui-select" defaultValue="all">
+              <option value="all">All questions</option>
+              <option value="bookmarked">Bookmarked</option>
+              <optgroup label="Concepts">
+                <option value="rag">RAG</option>
+                <option value="llms">LLMs</option>
+              </optgroup>
+            </Select>
           </div>
         </div>
       </Section>
@@ -243,6 +260,22 @@ export default function UiPreview() {
             <p className="text-muted">
               When the knowledge changes often, or when retrieval and a better prompt already get
               you there.
+            </p>
+          </Collapsible>
+          <Collapsible
+            title="With an action in the header"
+            actions={
+              <button
+                type="button"
+                aria-label="Bookmark"
+                className="rounded-control p-1.5 text-muted transition-colors hover:bg-subtle hover:text-ink"
+              >
+                <Bookmark className="size-4" aria-hidden />
+              </button>
+            }
+          >
+            <p className="text-muted">
+              The actions slot sits beside the toggle, so clicking it does not open the panel.
             </p>
           </Collapsible>
         </div>

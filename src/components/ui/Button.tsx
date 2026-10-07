@@ -20,6 +20,16 @@ interface ButtonProps extends ComponentProps<'button'> {
   size?: Size
 }
 
+/** The button look as a class string, for a router Link or anchor that should look like a Button. */
+export function buttonClasses(variant: Variant = 'primary', size: Size = 'md'): string {
+  return cn(
+    'inline-flex shrink-0 items-center justify-center rounded-control font-medium whitespace-nowrap transition-colors',
+    'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+    VARIANTS[variant],
+    SIZES[size],
+  )
+}
+
 export default function Button({
   variant = 'primary',
   size = 'md',
@@ -27,17 +37,5 @@ export default function Button({
   className,
   ...props
 }: ButtonProps) {
-  return (
-    <button
-      type={type}
-      className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-control font-medium whitespace-nowrap transition-colors',
-        'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
-        VARIANTS[variant],
-        SIZES[size],
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <button type={type} className={cn(buttonClasses(variant, size), className)} {...props} />
 }

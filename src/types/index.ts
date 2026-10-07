@@ -74,8 +74,14 @@ export interface Concept {
   relatedConceptIds: string[]
 }
 
-/** 1 = no idea, 5 = could answer it in my sleep. */
-export type Confidence = 1 | 2 | 3 | 4 | 5
+export type Confidence = 'weak' | 'shaky' | 'confident'
+
+/** The last project or concept page opened, for "Continue where you left off". */
+export interface LastVisited {
+  path: string
+  title: string
+  kind: 'project' | 'concept'
+}
 
 export interface PracticeEntry {
   questionId: string
@@ -84,10 +90,25 @@ export interface PracticeEntry {
   confidence?: Confidence
 }
 
+/** Spaced-repetition state for one question, written by a Practice rating. */
+export interface Review {
+  /** ISO timestamp. The question is due once this is in the past. */
+  nextReview: string
+  /** The gap that produced nextReview; 0 after a weak rating. */
+  intervalDays: number
+  /** The last few Practice ratings, oldest first. */
+  history: { ratedAt: string; confidence: Confidence }[]
+}
+
 /** Everything the user generates; persisted in localStorage. Keyed by content id. */
 export interface Progress {
   bookmarks: string[]
   confidence: Record<string, Confidence>
   notes: Record<string, string>
   practiceHistory: PracticeEntry[]
+  /** Only questions rated in Practice have an entry. */
+  reviews: Record<string, Review>
+  lastVisited?: LastVisited
+  /** Practice preference: show a textarea before the reveal. */
+  typeAnswerFirst?: boolean
 }

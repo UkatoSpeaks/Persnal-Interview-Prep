@@ -4,7 +4,6 @@ export const codeReviewerAgent: Project = {
   id: 'code-reviewer-agent',
   name: 'Code Reviewer Agent',
   tagline: 'TODO: fill from README',
-  // TODO: confirm status
   status: 'completed',
   techStack: [],
   links: {},

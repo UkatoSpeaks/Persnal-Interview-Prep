@@ -4,8 +4,7 @@ export const kavach: Project = {
   id: 'kavach',
   name: 'Kavach',
   tagline: 'AI fraud/scam detection. TODO: fill from README',
-  // TODO: confirm status
-  status: 'completed',
+  status: 'live',
   techStack: [],
   links: {},
   overview: 'TODO: fill from README',

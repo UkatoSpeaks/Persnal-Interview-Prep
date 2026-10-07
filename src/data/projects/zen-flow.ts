@@ -4,8 +4,7 @@ export const zenFlow: Project = {
   id: 'zen-flow',
   name: 'ZenFlow',
   tagline: 'TODO: fill from README',
-  // TODO: confirm status
-  status: 'completed',
+  status: 'live',
   techStack: [],
   links: {},
   overview: 'TODO: fill from README',

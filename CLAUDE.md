@@ -9,7 +9,7 @@ These are not negotiable. Do not propose or add anything that breaks them.
 - **No backend, no database.** Everything runs in the browser. No server, no serverless functions, no API routes, no hosted DB or auth. The one exception is the Groq proxy in `vite.config.ts` (below), which only forwards requests and adds the key.
 - **Content lives in the repo.** Projects, concepts and their questions are typed local data files in `src/data/`. Adding content means editing those files (see "How to add content").
 - **Questions and answers are curated, not generated at runtime.** The LLM may coach, grade or ask follow-ups on top of them, but it never invents the question bank or the reference answers.
-- **User progress lives in localStorage.** Bookmarks, confidence ratings, notes and practice history. All access goes through `src/lib/storage.ts`; never call `localStorage` directly from components or pages.
+- **User progress lives in localStorage.** Bookmarks, confidence ratings (weak / shaky / confident), notes and practice history, all keyed by question id. All access goes through `src/lib/storage.ts`; never call `localStorage` directly from components or pages. Components read it with `useProgress(selector)` from `src/lib/useProgress.ts` and write it with the helpers in `storage.ts` (`setConfidence`, `toggleBookmark`, `setNote`, ...), which update every subscribed component.
 - **AI features call Groq through the Vite proxy.** The browser uses the official `groq-sdk` (`dangerouslyAllowBrowser: true`, placeholder `apiKey`) pointed at `/api/groq` on its own origin; `vite.config.ts` forwards that to `https://api.groq.com` and sets the `Authorization` header. Always get the client from `src/lib/groq.ts`.
 - **The Groq API key lives only in the gitignored local `.env` as `GROQ_API_KEY`** (template in `.env.example`) and is injected by the Vite proxy. Never expose it to client code: no `VITE_` prefix, no `import.meta.env`, no `define`, no localStorage, never hardcoded or committed. The Settings page can only test the connection; it cannot see or edit the key.
 - **The app runs via `npm run dev` or `npm run preview` only.** `dist/` has no key and no proxy, so a static deploy of it has no working AI features. Keep the server on localhost (no `--host`): anyone who can reach it can spend the key.
@@ -54,6 +54,10 @@ src/
 - Routes are defined in `src/App.tsx`; sidebar links in `src/components/Sidebar.tsx`. A new page needs both, except dev-only routes (currently just `/ui`), which get a route but no sidebar link and are reachable by URL only.
 - Pages are lazy-loaded in `src/App.tsx` with `React.lazy`; the `Suspense` boundary (plain text fallback) is in `src/components/Layout.tsx`. Add new pages the same way, and don't import a page statically from anywhere else.
 - Shared types go in `src/types/`, not next to the component that first uses them.
+- Questions are always rendered with `QuestionList` / `QuestionItem` from `src/components/`: collapsed by default, with the confidence picker, bookmark and notes built in. Don't build a second question UI. The one exception is the flashcard in `src/pages/Practice.tsx`.
+- Practice ratings go through `rateQuestion` in `storage.ts`, which sets the confidence and schedules the next review (`Progress.reviews`, intervals in `src/lib/review.ts`). Session building and the `/practice` URL params (`filter`, `project`, `category`, `limit`) are in `src/lib/practice.ts`.
+- Global search is `src/components/CommandPalette.tsx` (Cmd/Ctrl+K), lazy-loaded from `Layout`. It indexes projects, concepts and questions at module load; a new kind of content needs an entry there. Question results link to `#<question id>` on the detail page.
+- Local content renders synchronously. No spinners or skeletons for data from `src/data/`.
 - Progress records are keyed by content `id`, so ids in `src/data/` must be unique across projects, concepts and questions, and must not be renamed once in use.
 
 ## How to add content
@@ -90,5 +94,5 @@ Look and feel: light, clean, minimal and calm, in the style of Linear, Vercel an
 - **Status colors only carry meaning:** green = confident, amber = shaky, red = weak. Use the soft tinted backgrounds (`bg-confident-soft`, ...), not saturated fills.
 - **Sidebar:** white background with a right border, the app name at the top, nav items with icons. The active item gets a light gray background and an accent-colored icon. Fixed on desktop; a slide-in drawer on mobile (below `md`).
 - **Icons:** `lucide-react` only.
-- **Components:** use the primitives in `src/components/ui/` (Button, Card, Badge, Input, Textarea, Tabs, Kbd, EmptyState, ProgressBar, Collapsible, Markdown) rather than restyling raw elements per page. No component library with heavy default styling.
+- **Components:** use the primitives in `src/components/ui/` (Button, Card, Badge, Input, Textarea, Select, Tabs, Kbd, EmptyState, ProgressBar, Collapsible, Markdown) rather than restyling raw elements per page. No component library with heavy default styling.
 - **`/ui` previews every primitive.** It is a dev-only route with no sidebar link. When you add or change one, update `src/pages/UiPreview.tsx` to show it.

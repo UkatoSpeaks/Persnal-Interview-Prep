@@ -4,7 +4,6 @@ export const gigacorpAiSupport: Project = {
   id: 'gigacorp-ai-support',
   name: 'GigaCorp AI Support',
   tagline: 'RAG agent. TODO: fill from README',
-  // TODO: confirm status
   status: 'completed',
   techStack: [],
   links: {},

@@ -4,10 +4,12 @@ import {
   FolderKanban,
   LayoutDashboard,
   MessagesSquare,
+  Search,
   Settings,
   Target,
   type LucideIcon,
 } from 'lucide-react'
+import Kbd from './ui/Kbd'
 
 interface NavItem {
   to: string
@@ -24,16 +26,31 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
+const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform)
+
 interface SidebarProps {
   /** Called after a link is clicked, so the mobile drawer can close. */
   onNavigate?: () => void
+  /** Opens the command palette. */
+  onSearch: () => void
 }
 
-export default function Sidebar({ onNavigate }: SidebarProps) {
+export default function Sidebar({ onNavigate, onSearch }: SidebarProps) {
   return (
     <div className="flex h-full w-60 flex-col border-r border-line bg-surface">
       <div className="flex h-14 items-center px-5 text-sm font-semibold tracking-tight">
         PrepAgent
+      </div>
+      <div className="px-3 pb-2">
+        <button
+          type="button"
+          onClick={onSearch}
+          className="flex h-9 w-full items-center gap-3 rounded-control border border-line px-3 text-sm text-muted transition-colors hover:border-line-strong hover:text-ink"
+        >
+          <Search className="size-4 shrink-0" aria-hidden />
+          <span className="flex-1 text-left">Search</span>
+          <Kbd>{IS_MAC ? '⌘K' : 'Ctrl K'}</Kbd>
+        </button>
       </div>
       <nav className="flex-1 space-y-0.5 px-3 py-2">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (

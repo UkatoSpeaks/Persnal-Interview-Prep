@@ -4,7 +4,6 @@ export const leetLens: Project = {
   id: 'leet-lens',
   name: 'LeetLens',
   tagline: 'TODO: fill from README',
-  // TODO: confirm status
   status: 'completed',
   techStack: [],
   links: {},

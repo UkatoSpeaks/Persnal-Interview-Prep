@@ -4,8 +4,7 @@ export const jobRadar: Project = {
   id: 'job-radar',
   name: 'JobRadar',
   tagline: 'TODO: fill from README',
-  // TODO: confirm status
-  status: 'completed',
+  status: 'in-progress',
   techStack: [],
   links: {},
   overview: 'TODO: fill from README',

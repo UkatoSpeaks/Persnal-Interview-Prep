@@ -4,8 +4,7 @@ export const tacticLens: Project = {
   id: 'tactic-lens',
   name: 'TacticLens',
   tagline: 'TODO: fill from README',
-  // TODO: confirm status
-  status: 'completed',
+  status: 'live',
   techStack: [],
   links: {},
   overview: 'TODO: fill from README',

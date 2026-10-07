@@ -4,7 +4,6 @@ export const multiAgentResearchGenerator: Project = {
   id: 'multi-agent-research-generator',
   name: 'Multi-Agent Research Generator',
   tagline: 'TODO: fill from README',
-  // TODO: confirm status
   status: 'completed',
   techStack: [],
   links: {},

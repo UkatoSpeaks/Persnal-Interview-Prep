@@ -4,7 +4,6 @@ export const footballScouting: Project = {
   id: 'football-scouting',
   name: 'Football Scouting',
   tagline: 'Player similarity with KNN. TODO: fill from README',
-  // TODO: confirm status
   status: 'completed',
   techStack: [],
   links: {},

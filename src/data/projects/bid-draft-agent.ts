@@ -4,8 +4,7 @@ export const bidDraftAgent: Project = {
   id: 'bid-draft-agent',
   name: 'Bid Draft Agent',
   tagline: 'TODO: fill from README',
-  // TODO: confirm status
-  status: 'completed',
+  status: 'in-progress',
   techStack: [],
   links: {},
   overview: 'TODO: fill from README',
