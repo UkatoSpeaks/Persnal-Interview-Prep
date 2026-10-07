@@ -3,6 +3,7 @@ dist
 *.local
 .env
 .env.*
+!.env.example
 .vite
 *.log
 .DS_Store

@@ -6,11 +6,13 @@ Personal interview-prep web app for AI Engineer / Agentic AI / Full Stack interv
 
 These are not negotiable. Do not propose or add anything that breaks them.
 
-- **No backend, no database.** Everything runs in the browser. No server, no serverless functions, no API routes, no hosted DB or auth.
-- **Content lives in the repo.** Projects, questions and AI concepts are typed local data files in `src/data/`. Adding content means editing those files.
+- **No backend, no database.** Everything runs in the browser. No server, no serverless functions, no API routes, no hosted DB or auth. The one exception is the Groq proxy in `vite.config.ts` (below), which only forwards requests and adds the key.
+- **Content lives in the repo.** Projects, concepts and their questions are typed local data files in `src/data/`. Adding content means editing those files (see "How to add content").
+- **Questions and answers are curated, not generated at runtime.** The LLM may coach, grade or ask follow-ups on top of them, but it never invents the question bank or the reference answers.
 - **User progress lives in localStorage.** Bookmarks, confidence ratings, notes and practice history. All access goes through `src/lib/storage.ts`; never call `localStorage` directly from components or pages.
-- **AI features call Groq directly from the browser** with the official `groq-sdk` (`dangerouslyAllowBrowser: true`). Always get the client from `src/lib/groq.ts`.
-- **The Groq API key is entered on the Settings page and stored in localStorage, and nowhere else.** Never hardcode it or put it in source, build config or an env variable (Vite inlines `VITE_*` values into the bundle). Read it only through `getApiKey()` in `src/lib/storage.ts`.
+- **AI features call Groq through the Vite proxy.** The browser uses the official `groq-sdk` (`dangerouslyAllowBrowser: true`, placeholder `apiKey`) pointed at `/api/groq` on its own origin; `vite.config.ts` forwards that to `https://api.groq.com` and sets the `Authorization` header. Always get the client from `src/lib/groq.ts`.
+- **The Groq API key lives only in the gitignored local `.env` as `GROQ_API_KEY`** (template in `.env.example`) and is injected by the Vite proxy. Never expose it to client code: no `VITE_` prefix, no `import.meta.env`, no `define`, no localStorage, never hardcoded or committed. The Settings page can only test the connection; it cannot see or edit the key.
+- **The app runs via `npm run dev` or `npm run preview` only.** `dist/` has no key and no proxy, so a static deploy of it has no working AI features. Keep the server on localhost (no `--host`): anyone who can reach it can spend the key.
 - **Everything must be free.** No paid services, APIs or tiers.
 
 ## Stack
@@ -27,13 +29,18 @@ These are not negotiable. Do not propose or add anything that breaks them.
 
 - `npm run dev` — start the dev server
 - `npm run build` — typecheck, then production build
+- `npm run preview` — serve the production build locally, with the Groq proxy
 - `npm run typecheck` — `tsc --noEmit`
 
 ## Folder structure
 
 ```
 src/
-  data/        projects, questions, concepts (typed .ts files)
+  data/
+    projects/  one file per project + index.ts
+    concepts/  one file per concept category + index.ts
+    index.ts   builds the projects, concepts and questions arrays
+    validate.ts  dev-only check for duplicate ids and broken links
   types/       shared TypeScript types
   lib/         storage.ts (localStorage helpers), groq.ts (Groq client), cn.ts
   components/  app shell (Layout, Sidebar, ...)
@@ -48,6 +55,19 @@ src/
 - Pages are lazy-loaded in `src/App.tsx` with `React.lazy`; the `Suspense` boundary (plain text fallback) is in `src/components/Layout.tsx`. Add new pages the same way, and don't import a page statically from anywhere else.
 - Shared types go in `src/types/`, not next to the component that first uses them.
 - Progress records are keyed by content `id`, so ids in `src/data/` must be unique across projects, concepts and questions, and must not be renamed once in use.
+
+## How to add content
+
+Types are in `src/types/index.ts`. Pages import `projects`, `concepts` and `questions` from `src/data` (the folder index), never from an individual content file.
+
+- **New project:** create `src/data/projects/<name>.ts` exporting one `Project` (copy `kavach.ts`), then add `export * from './<name>'` to `src/data/projects/index.ts`.
+- **New concept category:** add the name to `CONCEPT_CATEGORIES` in `src/types/index.ts` (the array order is the display order), create `src/data/concepts/<category>.ts` exporting one `Concept[]` (copy `rag.ts`), then add `export * from './<category>'` to `src/data/concepts/index.ts`.
+- **New concept or question in an existing category or project:** edit that file. No index change.
+- Each content file has exactly one export; the indexes collect every export, so a second export would be treated as content.
+- **Ids:** kebab-case and prefixed by their parent: concept `rag-chunking`, its questions `rag-chunking-1`, `rag-chunking-2`. Number new questions upward; never reuse or renumber an id, since saved progress points at it.
+- **Answers** are markdown in the first person, the way they would be said in an interview. If a fact is uncertain, leave it out.
+- Content strings are template literals, so escape any backtick or `${` inside them.
+- In dev, `src/data/validate.ts` warns in the browser console about duplicate ids and `relatedConceptIds` that point at nothing. Check the console after adding content.
 
 ## Design rules
 

@@ -3,7 +3,6 @@ import type { Progress } from '../types'
 const PREFIX = 'prepagent:'
 
 const KEYS = {
-  apiKey: `${PREFIX}groq-api-key`,
   progress: `${PREFIX}progress`,
 } as const
 
@@ -31,27 +30,6 @@ function write(key: string, value: unknown): void {
   } catch {
     // Nothing useful to do; the value just won't persist.
   }
-}
-
-function remove(key: string): void {
-  try {
-    localStorage.removeItem(key)
-  } catch {
-    // Same as write: nothing useful to do.
-  }
-}
-
-/** The Groq key entered on the Settings page, or '' if none is saved. */
-export function getApiKey(): string {
-  return read(KEYS.apiKey, '')
-}
-
-export function setApiKey(apiKey: string): void {
-  write(KEYS.apiKey, apiKey.trim())
-}
-
-export function clearApiKey(): void {
-  remove(KEYS.apiKey)
 }
 
 export function getProgress(): Progress {
